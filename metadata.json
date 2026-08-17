@@ -1,0 +1,8 @@
+{
+  "name": "Remix Odoo-Style Task Manager",
+  "description": "Task management application featuring drag-and-drop Kanban boards, time tracking, and team collaboration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
