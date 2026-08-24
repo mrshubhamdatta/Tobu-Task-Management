@@ -42,15 +42,6 @@ export function TaskDetailView({ task, onClose, onUpdate }: TaskDetailViewProps)
     
     setNewMessage(`${textBeforeMention}@${user.name} ${textAfterMention}`);
     setMentionSearch(null);
-
-    // Auto-assign user if not already assigned
-    const isAlreadyAssigned = task.assignees?.some(a => a.id === user.id);
-    if (!isAlreadyAssigned) {
-      onUpdate({
-        ...task,
-        assignees: [...(task.assignees || []), user]
-      });
-    }
   };
 
   const filteredUsers = mockUsers.filter(u => 
@@ -62,16 +53,29 @@ export function TaskDetailView({ task, onClose, onUpdate }: TaskDetailViewProps)
     e.preventDefault();
     if (!newMessage.trim()) return;
 
+    const messageText = newMessage.trim();
     const message: ChatMessage = {
       id: `m${Date.now()}`,
       authorId: currentUser.id,
-      text: newMessage.trim(),
+      text: messageText,
       timestamp: Date.now(),
     };
+
+    const mentionedUsers = mockUsers.filter(u => messageText.includes(`@${u.name}`));
+    const newAssignees = [...(task.assignees || [])];
+    let assigneesUpdated = false;
+
+    mentionedUsers.forEach(u => {
+      if (!newAssignees.some(a => a.id === u.id)) {
+        newAssignees.push(u);
+        assigneesUpdated = true;
+      }
+    });
 
     onUpdate({
       ...task,
       messages: [...(task.messages || []), message],
+      ...(assigneesUpdated ? { assignees: newAssignees } : {})
     });
     setNewMessage('');
   };
